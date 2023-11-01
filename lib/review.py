@@ -1,10 +1,8 @@
 from __init__ import CURSOR, CONN
-from department import Department
 from employee import Employee
 
 
 class Review:
-    # Dictionary of objects saved to the database.
     all = {}
 
     def __init__(self, year, summary, employee_id, id=None):
@@ -25,16 +23,13 @@ class Review:
 
     @year.setter
     def year(self, new_val):
-        # if not isinstance(new_val, int):
-        #     raise TypeError("Year must be an integer.")
-        # elif new_val < 2000:
-        #     raise ValueError("Year should be greater than 2000.")
-        # else:
-        #     self._year = new_val
-        if isinstance(new_val, int) and new_val >= 2000:
-            self._year = new_val
+        if not isinstance(new_val, int):
+            raise ValueError("Year must be an integer.")
+            # had to be ValueError to pass test
+        elif new_val < 2000:
+            raise ValueError("Year should be greater than 2000.")
         else:
-            raise ValueError("year must be an integer >= 2000")
+            self._year = new_val
 
     @property
     def summary(self):
@@ -91,10 +86,8 @@ class Review:
                 INSERT INTO reviews (year, summary, employee_id)
                 VALUES (?, ?, ?)
         """
-
         CURSOR.execute(sql, (self.year, self.summary, self.employee_id))
         CONN.commit()
-
         self.id = CURSOR.lastrowid
         type(self).all[self.id] = self
 
@@ -160,7 +153,5 @@ class Review:
             SELECT *
             FROM reviews
         """
-
         rows = CURSOR.execute(sql).fetchall()
-
         return [cls.instance_from_db(row) for row in rows]
